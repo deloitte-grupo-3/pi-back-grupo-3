@@ -40,15 +40,6 @@ public class Client {
 
     }
 
-    public Client(Long id, String cpf, String name, String address, String phone, User user) {
-        this.id = id;
-        this.cpf = cpf;
-        this.name = name;
-        this.address = address;
-        this.phone = phone;
-        this.user = user;
-    }
-
     public Long getId() {
         return id;
     }
