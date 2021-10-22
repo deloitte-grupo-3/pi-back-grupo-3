@@ -39,7 +39,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
 		.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS) //não irá guardar os estados
 		.and()
 			.authorizeRequests() // para autorizar requisições
-			.antMatchers("/auth/signin","/api-docs/**", "swagger-ui.html**").permitAll() //vamos passar os padrões que serão permitidos
+			.antMatchers("/auth/signin","/clients","/api-docs/**", "swagger-ui.html**").permitAll() //vamos passar os padrões que serão permitidos
 			.antMatchers("/api/**").authenticated() //pra chegar aqui precisa estar authenticated
 			.antMatchers("/users").denyAll() //ngm pode acessar
 		.and()

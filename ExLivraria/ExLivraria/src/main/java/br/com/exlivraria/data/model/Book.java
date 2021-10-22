@@ -34,6 +34,14 @@ public class Book implements Serializable{
 	
 	@Column(nullable = false, length = 250)	//cria uma coluna com o mesmo nome da variável
 	private String title;
+
+	/* INICIA ALTERAÇÕES FEITAS POR ADRIANO */
+	@Column(nullable = false, length = 250)	//cria uma coluna com o mesmo nome da variável
+	private String image;
+
+	@Column(nullable = false, length = 750)	//cria uma coluna com o mesmo nome da variável
+	private String description;
+	/* TERMINA ALTERAÇÕES FEITAS POR ADRIANO */
 	
 	public Book() {
 		
@@ -78,6 +86,24 @@ public class Book implements Serializable{
 	public void setTitle(String title) {
 		this.title = title;
 	}
+
+	/* INICIA ALTERAÇÕES FEITAS POR ADRIANO */
+	public String getImage() {
+		return image;
+	}
+
+	public void setImage(String image) {
+		this.image = image;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+	/* TERMINA ALTERAÇÕES FEITAS POR ADRIANO */
 
 	@Override
 	public int hashCode() {

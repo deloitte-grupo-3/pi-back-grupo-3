@@ -5,16 +5,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -51,8 +42,12 @@ public class User implements UserDetails,Serializable{
 	
 	@Column(name = "enabled")
 	private Boolean enabled;
-	
-	
+
+	/* INICIA ALTERAÇÕES FEITAS POR ADRIANO */
+	@OneToOne(mappedBy = "user", fetch = FetchType.LAZY)
+	private Client client;
+	/* TERMINA ALTERAÇÕES FEITAS POR ADRIANO */
+
 	@ManyToMany(fetch = FetchType.EAGER) //significa que quando o Hibernate for carregar este usuário ele vai buscar a permissão de cara(EAGER) e sempre vai buscá-la
 	//EM ALGUNS CASOS, é possivel deixar o fetchtype como LAZY para ele buscar as permissões SOMENTE quando ela for usada.
 	
@@ -174,6 +169,16 @@ public class User implements UserDetails,Serializable{
 	public void setPassword(String password) {
 		this.password = password;
 	}
+
+	/* INICIA ALTERAÇÕES FEITAS POR ADRIANO */
+	public Client getClient() {
+		return client;
+	}
+
+	public void setClient(Client client) {
+		this.client = client;
+	}
+	/* TERMINA ALTERAÇÕES FEITAS POR ADRIANO */
 
 	@Override
 	public int hashCode() {
