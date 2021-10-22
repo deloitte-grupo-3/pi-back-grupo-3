@@ -43,12 +43,15 @@ public class User implements UserDetails,Serializable{
 	@Column(name = "enabled")
 	private Boolean enabled;
 
-	/* INICIA ALTERAÇÕES FEITAS POR ADRIANO */
+	/* INICIA ALTERAÇÕES FEITAS POR ADRIANO
 	@OneToOne(mappedBy = "user", fetch = FetchType.LAZY)
 	private Client client;
 	/* TERMINA ALTERAÇÕES FEITAS POR ADRIANO */
 
-	@ManyToMany(fetch = FetchType.EAGER) //significa que quando o Hibernate for carregar este usuário ele vai buscar a permissão de cara(EAGER) e sempre vai buscá-la
+	@ManyToMany(fetch = FetchType.EAGER,cascade = {
+			CascadeType.PERSIST,
+			CascadeType.MERGE
+	}) //significa que quando o Hibernate for carregar este usuário ele vai buscar a permissão de cara(EAGER) e sempre vai buscá-la
 	//EM ALGUNS CASOS, é possivel deixar o fetchtype como LAZY para ele buscar as permissões SOMENTE quando ela for usada.
 	
 	@JoinTable(name = "user_permission", joinColumns = {@JoinColumn(name = "id_user")},inverseJoinColumns ={@JoinColumn(name = "id_permission")})
@@ -170,7 +173,7 @@ public class User implements UserDetails,Serializable{
 		this.password = password;
 	}
 
-	/* INICIA ALTERAÇÕES FEITAS POR ADRIANO */
+	/* INICIA ALTERAÇÕES FEITAS POR ADRIANO
 	public Client getClient() {
 		return client;
 	}

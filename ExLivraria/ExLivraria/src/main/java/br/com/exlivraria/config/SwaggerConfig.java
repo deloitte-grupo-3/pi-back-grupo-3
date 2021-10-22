@@ -22,15 +22,15 @@ public class SwaggerConfig {
 		return new Docket(DocumentationType.SWAGGER_2)
 				.select()
 				//.apis(RequestHandlerSelectors.any())
-				.apis(RequestHandlerSelectors.basePackage("br.com.erudio"))
+				.apis(RequestHandlerSelectors.basePackage("br.com.exlivraria"))
 				.paths(PathSelectors.any())
 				.build()
 				.apiInfo(apiInfo());//adicionado
 		}
 		
 		public ApiInfo apiInfo() {
-			return new ApiInfo("RESTFul API with Spring Boot 2.1.3",
-					"Some description about your API",
+			return new ApiInfo("ExLivraria - Spring Boot 2.1.3",
+					"Criação do Grupo 3 da Digital House",
 					"version v1",
 					"termsOfServiceUrl",
 					new Contact("Org Name", "www.site.com.br", "email@email.com"),

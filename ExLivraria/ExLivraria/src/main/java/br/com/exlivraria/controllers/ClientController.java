@@ -1,7 +1,11 @@
 package br.com.exlivraria.controllers;
 
 import br.com.exlivraria.data.model.Client;
+import br.com.exlivraria.data.vo.v1.ClientVO;
 import br.com.exlivraria.repository.ClientRepository;
+import br.com.exlivraria.services.ClientService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -9,6 +13,10 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
+
+@Api(value = "Client Endpoint", tags = {"ClientEndpoint"})
 @RestController
 @RequestMapping("/clients")
 @CrossOrigin("*")
@@ -16,16 +24,34 @@ public class ClientController {
     @Autowired
     private ClientRepository repository;
 
-    @GetMapping
-    public ResponseEntity<List<Client>> GetAll() {
-        return ResponseEntity.ok(repository.findAll());
+    @Autowired
+    private ClientService services;
+
+    @ApiOperation(value = "Find all the clients recorded")
+    @GetMapping(produces = {"application/json", "application/xml" ,"application/x-yaml" })
+    public List<ClientVO> findAll(){
+
+        List<ClientVO> clients = services.findAll();
+
+        clients
+                .stream() //vai pegar a lista vai percorrer um a um com o foreach de acordo com o que especificarmos abaixo:
+                .forEach(p -> p.add(
+                                linkTo(methodOn(ClientController.class).findById(p.getKey())).withSelfRel()
+                        )
+                ); //no caso irá adicionar a todos os itens da lista um link apontando pra ele mesmo.
+        return clients;
     }
 
-    @GetMapping("/{id}")//get pelo id
-    public ResponseEntity<Client> GetById(@PathVariable Long id) {
-        return repository.findById(id).
-                map(resp -> ResponseEntity.ok(resp)).
-                orElse(ResponseEntity.notFound().build());
+    @ApiOperation(value = "Find specific client recorded")
+    @GetMapping(value = "/{id}",produces = {"application/json", "application/xml" ,"application/x-yaml"})
+    public ClientVO findById(@PathVariable("id")Long id){
+
+        ClientVO clientVO = services.findById(id); //busca o Person no banco e armazena em personVO.
+
+        clientVO.add(linkTo(methodOn(ClientController.class) //irá adicionar os links em ClientController (neste caso ele linka com ele mesmo)
+                .findById(id)) //o método que será linkado é o find by id
+                .withSelfRel()); //serve para dizer que relaciona a si mesmo.
+        return clientVO;
     }
 
     @GetMapping("/cpf/{cpf}")
@@ -43,18 +69,36 @@ public class ClientController {
         return  ResponseEntity.ok(repository.findAllByAddressContainingIgnoreCase(address));
     }
 
-    @PostMapping
-    public ResponseEntity<Client> Post(@RequestBody Client client) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(repository.save(client));
+    @ApiOperation(value = "Creates client on the database")
+    @PostMapping(produces = {"application/json", "application/xml","application/x-yaml" },
+            consumes = {"application/json", "application/xml","application/x-yaml" })
+    public ClientVO create(@RequestBody ClientVO client){
+
+        ClientVO clientVO = services.create(client);
+
+        clientVO.add(linkTo(methodOn(ClientController.class) //irá adicionar os links em ClientController(neste caso ele linka com ele mesmo)
+                .findById(clientVO.getKey())) //o método que será linkado é o find by id
+                .withSelfRel()); //serve para dizer que relaciona a si mesmo.
+        return clientVO;
     }
 
-    @PutMapping
-    public ResponseEntity<Client> Put(@RequestBody Client client) {
-        return ResponseEntity.status(HttpStatus.OK).body(repository.save(client));
+    @ApiOperation(value = "Update specific Client data")
+    @PutMapping(produces = {"application/json", "application/xml" ,"application/x-yaml"},
+            consumes = {"application/json", "application/xml","application/x-yaml" })
+    public ClientVO update(@RequestBody ClientVO client){
+
+        ClientVO  clientVO = services.update(client);
+
+        clientVO.add(linkTo(methodOn(ClientController.class) //irá adicionar os links em ClientController(neste caso ele linka com ele mesmo)
+                .findById(clientVO.getKey())) //o método que será linkado é o find by id
+                .withSelfRel()); //serve para dizer que relaciona a si mesmo.
+        return clientVO;
     }
 
+    @ApiOperation(value = "Delete Client recorded")
     @DeleteMapping("/{id}")
-    public void Delete(@PathVariable Long id) {
-        repository.deleteById(id);
+    public ResponseEntity<?> delete(@PathVariable("id")Long id){
+        services.delete(id);
+        return ResponseEntity.ok().build();  //Adicionamos um retorno para o delete tb
     }
 }
