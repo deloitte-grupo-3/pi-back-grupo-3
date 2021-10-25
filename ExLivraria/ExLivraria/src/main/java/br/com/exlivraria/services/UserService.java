@@ -59,6 +59,7 @@ public class UserService implements UserDetailsService {
 		user.setCredentialNonExpired(true);
 		user.setEnabled(true);
 		user.setPermissions(perm);
+		user.getRoles();
 
 		var token = tokenProvider.createToken(user.getUsername(), user.getRoles());
 		//var entity = DozerConverter.parseObject(acVO, User.class);//recebe o param VO e transforma em entity

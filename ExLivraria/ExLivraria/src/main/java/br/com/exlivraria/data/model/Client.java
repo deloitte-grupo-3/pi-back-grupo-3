@@ -22,7 +22,7 @@ public class Client {
     private String name;
 
     @NotNull
-    @Size(min = 35, max = 500)
+    @Size(min = 15, max = 500)
     private String address;
 
     @NotNull
@@ -91,13 +91,28 @@ public class Client {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (!(o instanceof Client)) return false;
+
         Client client = (Client) o;
-        return Objects.equals(id, client.id) && Objects.equals(cpf, client.cpf) && Objects.equals(name, client.name) && Objects.equals(address, client.address) && Objects.equals(phone, client.phone) && Objects.equals(user, client.user);
+
+        if (id != null ? !id.equals(client.id) : client.id != null) return false;
+        if (cpf != null ? !cpf.equals(client.cpf) : client.cpf != null) return false;
+        if (name != null ? !name.equals(client.name) : client.name != null) return false;
+        if (address != null ? !address.equals(client.address) : client.address != null) return false;
+        if (phone != null ? !phone.equals(client.phone) : client.phone != null) return false;
+        if (user != null ? !user.equals(client.user) : client.user != null) return false;
+        return orders != null ? orders.equals(client.orders) : client.orders == null;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, cpf, name, address, phone, user);
+        int result = id != null ? id.hashCode() : 0;
+        result = 31 * result + (cpf != null ? cpf.hashCode() : 0);
+        result = 31 * result + (name != null ? name.hashCode() : 0);
+        result = 31 * result + (address != null ? address.hashCode() : 0);
+        result = 31 * result + (phone != null ? phone.hashCode() : 0);
+        result = 31 * result + (user != null ? user.hashCode() : 0);
+        result = 31 * result + (orders != null ? orders.hashCode() : 0);
+        return result;
     }
 }

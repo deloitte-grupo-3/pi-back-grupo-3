@@ -4,13 +4,18 @@ import br.com.exlivraria.Exception.ResourceNotFoundException;
 import br.com.exlivraria.converter.DozerConverter;
 import br.com.exlivraria.data.model.Book;
 import br.com.exlivraria.data.model.Client;
+import br.com.exlivraria.data.model.Permission;
+import br.com.exlivraria.data.model.User;
 import br.com.exlivraria.data.vo.v1.BookVO;
 import br.com.exlivraria.data.vo.v1.ClientVO;
 import br.com.exlivraria.repository.BookRepository;
 import br.com.exlivraria.repository.ClientRepository;
+import br.com.exlivraria.security.AccountCredentialsVO;
+import br.com.exlivraria.security.jwt.JwtTokenProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -19,10 +24,38 @@ public class ClientService {
     @Autowired
     ClientRepository repository;
 
-    public ClientVO create(ClientVO client) {
+    @Autowired
+    UserService serviceUser;
+
+    @Autowired
+    JwtTokenProvider tokenProvider;
+
+    public String create(ClientVO client) {
+
+        //Criando Permissoes do usuário
+        List<Permission> perm = new ArrayList<Permission>();
+        Permission p = new Permission();
+        p.setDescription("COMMON_USER");
+        perm.add(p);
+
+
+
+        AccountCredentialsVO acVO = new AccountCredentialsVO(); //cria um VO
+        User user = client.getUser();   //Cria um USER e popula com o recebido por param
+        acVO.setUsername(user.getUsername()); //popula o VO com username
+        acVO.setPassword(user.getPassword()); //popula o VO com pswd
+        //String token = serviceUser.create(acVO); //recebe o token de acesso e cria o User no BD
+        user.setPermissions(perm);
+        user.getRoles();
+        var token = tokenProvider.createToken(user.getUsername(), user.getRoles());
+
+        client.setUser(user);//devolve o usuario para o client com as permissoes
+
         var entity = DozerConverter.parseObject(client, Client.class);//recebe o param VO e transforma em entity
-        var vo = DozerConverter.parseObject(repository.save(entity), ClientVO.class); //salva a entity no repository e converte em VO novamente
-        return vo; //retorna o VO para o client
+
+        repository.save(entity);
+        //DozerConverter.parseObject(repository.save(entity), ClientVO.class); //salva a entity no repository e converte em VO novamente
+        return token; //retorna o token para o client
     }
 
     public List<ClientVO> findAll() {

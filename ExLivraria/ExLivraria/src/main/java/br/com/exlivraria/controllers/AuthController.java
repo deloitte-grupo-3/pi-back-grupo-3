@@ -7,7 +7,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import br.com.exlivraria.data.model.Permission;
 import br.com.exlivraria.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -83,7 +82,7 @@ public class AuthController {
 	    }
 
 
-
+	@ApiOperation(value = "Create user by credentials")
 	@PostMapping(value = "/createUser",produces = {"application/json", "application/xml","application/x-yaml" },
 			consumes = {"application/json", "application/xml","application/x-yaml" })
 	public ResponseEntity createUser(@RequestBody AccountCredentialsVO data){ //recebe o VO como param

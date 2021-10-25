@@ -9,6 +9,7 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -72,14 +73,22 @@ public class ClientController {
     @ApiOperation(value = "Creates client on the database")
     @PostMapping(produces = {"application/json", "application/xml","application/x-yaml" },
             consumes = {"application/json", "application/xml","application/x-yaml" })
-    public ClientVO create(@RequestBody ClientVO client){
+    public String create(@RequestBody ClientVO client){
+        var u =client.getUser();
 
-        ClientVO clientVO = services.create(client);
+        u.getPassword();
+        u.setEnabled(true);
+        u.setCredentialNonExpired(true);
+        u.setAccountNonExpired(true);
+        u.setAccountNonLocked(true);
+        u.setAccountNonExpired(true);
 
-        clientVO.add(linkTo(methodOn(ClientController.class) //irá adicionar os links em ClientController(neste caso ele linka com ele mesmo)
-                .findById(clientVO.getKey())) //o método que será linkado é o find by id
-                .withSelfRel()); //serve para dizer que relaciona a si mesmo.
-        return clientVO;
+        BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder(16); //encrypta a senha
+        u.setPassword(bCryptPasswordEncoder.encode(u.getPassword())); // encoda a password e devolve pro proprio user.
+
+        client.setUser(u);
+        String token = services.create(client);
+        return token;
     }
 
     @ApiOperation(value = "Update specific Client data")
